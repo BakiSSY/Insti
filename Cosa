@@ -1,37 +1,68 @@
-1.- Programa que demana un enter, i li suma el seu dígit més a la dreta. Per exemple si introdueix el 463 el programa mostrarà 466 (463 + 3).
-
-2.- Programa que demane un nombre enter i determine si es parell, si acaba en 3 o 5 (unitats), i si té 2 xifres.
-
-
-3.- Programa que demane un caràcter a l’usuari i determine si és una lletra majúscula, i és una xifra numèrica, o si és una lletra de l’alfabet.
-(*)PISTA: Per a llegir un caracter per teclat utilitza la instrucció teclat.next().charAt(0)
-
-
-
-4.- Programa que demane un número de mes, i comprove si correspon a un mes de 30 dies.
-
-
-
-5.- Programa que demane un nombre enter de quatre xifres i determine si és capicua.
-
-
-
-6.- EL JOC DE L'ANIVERSARI.
-Es tracta d'un joc el qual mitjançant operacions matemàtiques el programa endevina el mes i any del teu aniversari. El programa ha de mostrar:
-Utilitzant paper i llapis, fes els següents càlculs:
-1. Determina el teu mes de naixement (gener=1, febrer=2...)
-2. Multiplica eixe número per 5.
-3. Afig 6 al número resultant.
-4. Multiplica eixe número per 4.
-5. Afig 9 al número resultant.
-6. Multiplica eixe número per 5.
-7. Afig el teu dia de naixement al número resultant.
-Introdueix el número que has obtingut:
-El teu aniversari es el: DD/MM
-
-(*) PISTA: Resta-li 165 al número que introdueix l'usuari. El número resultant dividit entre 100 (divisió entera) serà el mes de naixement, i el mòdul de dividir entre 100 serà el dia de naixement.
-
-7.- Crea una aplicació de control de despeses per a ajudar a examinar els patrons de despeses de l'usuari. La aplicació ha de demanar a l'usuari la quantitat que diners que ha gastat en menjar, roba, oci i habitatge, per a finalment mostrar una taula amb el percentatge de despeses de cada categoria.
-
-
-
+create table Ciclo_ciclo(
+	cod number(5) primary key,
+	nombre varchar2(20)not null,
+	descripcion varchar2 (100)
+);
+create table Ciclo_curso(
+	numero number(3),
+	grupo varchar2(3),
+	ciclo_cod vnumber(5) constraint FK_ciclo_cod references Ciclos_ciclo,
+	abreviatura varchar2(10) not null,
+	constraint PK_curso primary key(numero, grupo, ciclo_cod)
+);
+create table Ciclo_modulo(
+	cod varchar2(10) primary key,
+	nombre varchar2(100) not null,
+	n_horas number(3) not null
+);
+create table Ciclo_profesor(
+	dni varchar2(10) primary key,
+	nombre varchar2(30) not null,
+	email varchar2(80) not null,
+	tlf number (10) not null,
+	fecha_nacimiento date
+);
+create table Ciclo_departamento(
+	codigo number (10)primary key,
+	numbre varchar2 (20) not null,
+	jefe_depar varchar2(10) constraint FK_jefe_depar references Ciclo_profesor
+);
+create table Ciclo_impartir(
+	modulo_cod varchar2(10),
+	ciclo_cod number(5),
+	n_curso number(3),
+	curso_grupo varchar2(3),
+	profe_dni varchar2(10),
+	horas_semana number(3) not null,
+	constraint PK_imparte primary key(modulo_cod, ciclo_cod, n_curso, curso_grupo, profe_dni),
+	constraint FK_imparte_modulo foreign key modulo_cod references Ciclo_modulo,
+	constraint FK_imparte_curso foreign key (n_curso, curso_grupo, ciclo_cod) references Ciclo_curso,
+	constraint FK_imparte_profe foreign key profe_dni references Ciclo_profesor
+	
+);
+create table Ciclo_alumno(
+	dni varchar2 (10) primary key,
+	nombre varchar2(20) not null,
+	email varchar2(50) not null,
+	fecha_nacimiento date,
+	tlf number(10),
+	ciclo_cod number (5),
+	n_curso number(3),
+	grupo_curso varchar2(3),
+	constraint FK_alumnocurso foreign key (n_curso, grupo_curso, ciclo_cod) references Ciclo_curso	
+);
+create table Ciclo_trimestre(
+	cod number(5) primary key,
+	nombre varchar2(20) not null,
+	fecha date not null
+);
+create table Ciclo_evaluacion(
+	alumno_dni varchar2(10),
+	modulo_cod varchar2(10),
+	trimestre_cod number(5),
+	nota number(2,2)not null constraint CHECK (nota>0),
+	constraint PK_evaluacion primary(alumno_dni, modulo_cod, trimestre_cod),
+	constraint FK_evaluacionalumno foreign key alumno_dni references Ciclo_alumno,
+	constraint FK_evaluacionmodulo foreign key modulo_cod references Ciclo_modulo,
+	constraint FK_evaluaciontrimestre foreign key trimestre_cod references Ciclo_trimestre
+);
