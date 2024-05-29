@@ -1,0 +1,104 @@
+SET SERVEROUTPUT ON;
+create or replace function calcular_edad (v_fecha date)
+return number
+is 
+    v_edad number(10);
+
+begin 
+     v_edad:=FLOOR(MONTHS_BETWEEN(SYSDATE, v_fecha) / 12);
+    return v_edad;
+END;
+
+declare
+    v_edad number(10);
+    v_fecha date:= to_date('12/03/2003', 'dd/mm/yyyy');
+begin 
+    v_edad:=calcular_edad(v_fecha);
+    dbms_output.put_line(v_edad);
+end;
+
+----1
+
+CREATE OR REPLACE FUNCTION diff_edad(v_fecha1 DATE, v_fecha2 DATE)
+RETURN NUMBER
+IS
+    v_edad NUMBER;
+    v_fecha date:=v_fecha1;
+BEGIN
+    IF v_fecha1 IS NULL THEN
+        v_fecha := SYSDATE;
+    END IF;
+    
+    v_edad := FLOOR(MONTHS_BETWEEN(v_fecha, v_fecha2) / 12);
+    
+    RETURN v_edad;
+END;
+
+------2
+
+create or replace procedure mostrar(v_texto in varchar2)
+is
+begin
+    dbms_output.put_line(v_texto);
+end;
+    
+
+
+-----3
+
+create or REPLACE PROCEDURE mark_changer(v_dni in ciclos_alumno.dni_alumno%type,v_modulo_cod in ciclos_evaluacion.codigo_modulo%type, v_trimestre in ciclos_evaluacion.codigo_trimestre%type, v_new_mark number)
+is
+begin
+    update ciclos_evaluacion  set nota=v_new_mark where dni_alumno=v_dni and v_modulo_cod= codigo_modulo and v_trimestre=codigo_trimestre;
+end;
+
+----4
+create or replace procedure insertar_nota(v_dni in ciclos_alumno.dni_alumno%type,v_modulo_cod in ciclos_evaluacion.codigo_modulo%type, v_trimestre in ciclos_evaluacion.codigo_trimestre%type, v_new_mark number)
+is
+    v_ciclo ciclos_impartir.codigo_ciclo%type default null;
+begin
+    select codigo_ciclo into v_ciclo from ciclos_alumno a, ciclos_impartir i where i.codigo_ciclo=a.codigo_ciclo and a.dni_alumno=v_dni;
+    if v_ciclo is not null then
+        insert into ciclos_evaluacion(dni_alumno, codigo_modulo, codigo_trimestre, nota) 
+        values (v_dni,v_modulo_cod, v_trimestre, v_new_mark);
+    else
+        dbms_output.put_line('Los datos introducios no son válidos');
+    end if;
+end;
+
+----5
+create or replace procedure insertar_ciudad (v_pais in LISTAS_ESTADO_PROVINCIA.NOM_PAIS%type ,v_estado in LISTAS_ESTADO_PROVINCIA.NOMBRE%type, v_ciudad in LISTAS_CIUDAD.NOMBRE%type)
+is
+begin
+    if v_pais in (select NOM_PAIS from LISTAS_ESTADO_PROVINCIA where NOM_PAIS=v_pais;) then
+        if v_estado in  (select NOM_ESTADO_PROV from LISTAS_ESTADO_PROVINCIA where NOM_PAIS=v_pais and NOM_ESTADO_PROV=v_estado;) then
+            if v_ciudad in  (select nombre from LISTAS_CIUDAD where NOM_PAIS=v_pais and NOM_ESTADO_PROV=v_estado and nombre=v_ciudad;) then
+                dbms_output.put_line('Ya existe la ciudad: '||v_ciudad||', ya esta insertada');
+            else
+                insert into LISTAS_CIUDAD (NOM_PAIS, NOM_ESTADO_PROV, nombre)values (v_pais,v_estado,v_ciudad);
+                dbms_output.put_line('Ya existe el estado o la provincia: '||v_estado||', se insertará solo la ciudad: '||v_ciudad);
+            end if;
+        else
+            insert into LISTAS_ESTADO_PROVINCIA (NOM_PAIS,nombre)values(v_pais, v_estado);
+            insert into LISTAS_CIUDAD (NOM_PAIS, NOM_ESTADO_PROV, nombre)values (v_pais,v_estado,v_ciudad);    
+            dbms_output.put_line('Ya existe el país: '||v_pais||', se insertará la provincia o estado: '||v_estado||' y la ciudad: '||v_ciudad);
+        end if;
+    else
+        insert into LISTAS_ESTADO_PROVINCIA (NOM_PAIS,nombre)values(v_pais, v_estado);
+        insert into LISTAS_CIUDAD (NOM_PAIS, NOM_ESTADO_PROV, nombre)values (v_pais,v_estado,v_ciudad);    
+        dbms_output.put_line('No ecxiste, se insertará todo. País: '||v_pais||' provincia o estado: '||v_estado||' ciudad: '||v_ciudad);
+    end if;
+    
+end;
+----6
+
+create or replace procedure 
+is
+begin
+end;
+
+----7
+create or replace procedure 
+is
+begin
+end;
