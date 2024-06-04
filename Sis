@@ -1,0 +1,32 @@
+#!/bin/bash
+seguir="s"
+TOTAL=0
+while [ $seguir = "s" ]; do
+    read -p "Introduce el precio por unidad del articulo: " UD_PRICE
+    read -p "Introduce el numero de unidades: " N_UD
+    if [ $UD_PRICE -gt 0 -a $N_UD -gt 0]; then
+        TOTAL+=$UD_PRICE*$N_UD
+    else
+        echo "Ha habido un error a la hora de introducir los datos, los valores no pueden ser negativos ni nulos."
+    fi
+    while [ $seguir != "s" -o $seguir != "n" ]; do
+        read -p "desea introducir otro articulo?(s/n): " seguir
+    done
+done
+echo "El importe total de la lista de productos es: $TOTAL"
+
+#!/bin/bash
+RETENCION=0.11
+echo "----------CALCULADORA DE NOMINA-----------"
+read -p "Introduzca su nombre: " NOMBRE
+read -p "Introduce el numero de horas trabajadas: " HORAS
+read -p "Introduce el precio de cada hora: " PRECIO
+echo "El sueldo bruto es: $[$PRECIO*$HORAS], la retencion es de: $[$PRECIO*$HORAS*$RETENCION] y su sueldo neto es un total de: $[$[$PRECIO*$HORAS]-$[$PRECIO*$HORAS*$RETENCION]]"
+
+#!/bin/bash
+read -p "Introduce un numero del cual quieras saber su tabla de multiplicar: " NUM
+I=0
+while [ $I -lt 11 ];do
+    echo "$NUM * $I = $[$NUM*$I]"
+    I+=1
+done
